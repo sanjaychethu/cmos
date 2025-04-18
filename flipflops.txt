@@ -1,0 +1,109 @@
+Source Code for the SR Flip Flop is given as:
+module srff(s, r, clk, rst, q, qb);
+input s;
+input r;
+input clk;
+input rst;
+output q;
+output qb;
+reg q;
+always @(posedge clk)
+begin
+if(rst)
+q<='b0;
+else if (s=='b1 && r=='b0)
+q<='b1;
+else if (s=='b0 && r=='b1)
+q<='b0;
+else if (s=='b0 && r=='b0)
+q<=q;
+else if (s=='b1 && r=='b1)
+q<='bx;
+end
+assign qb=~q;
+endmodule
+
+Testbench Code is:
+module srff_v;
+reg s;
+reg r;
+reg clk;
+reg rst;
+wire q;
+wire qb;
+srff uut (s,r,clk,rst,q,qb);
+initial begin
+clk=1;
+forever #5 clk=~clk;
+end
+initial begin
+rst=1;
+#10 rst=0;
+#80 rst=1;
+#10 rst=0;
+end
+initial begin
+s=0; r=0;
+#15 s=0; r=1;
+#15 s=1; r=1;
+#30 s=0; r=0;
+end
+endmodule
+
+JK FLIP FLOP
+
+Source Code for the JK Flip Flop is provided as:
+module jkf(j, k, clk, rst, q, qbar);
+input j;
+input k;
+input clk;
+input rst;
+output q;
+output qbar;
+wire j,k,clk,rst,qbar;
+reg q;
+always @(posedge clk)
+begin
+if(rst)
+q<='b0;
+else if (j=='b0 && k=='b0)
+q<=q;
+else if (j=='b0 && k=='b1)
+q<='b0;
+else if (j=='b1 && k=='b0)
+q<='b1;
+else if (j=='b1 && k=='b1)
+q<=~q;
+end
+assign qbar=~q;
+endmodule
+
+Testbench Code is:
+module jkf_v;
+reg j;
+reg k;
+reg clk;
+reg rst;
+wire q;
+wire qbar;
+jkf uut (j,k,clk,rst,q,qbar);
+initial begin
+clk=1;
+forever #5 clk=~clk;
+end
+initial begin
+rst=1;
+#10 rst=0;
+#80 rst=1;
+#10 rst=0;
+end
+initial begin
+j=0; k=0;
+#10 j=0; k=0;
+#10 j=0; k=1;
+#10 j=1; k=0;
+#10 j=1; k=1;
+#10 j=0; k=0;
+#10 j=0; k=1;
+end
+endmodule
