@@ -1,0 +1,78 @@
+source code for the SAR is given as:
+module controller(clk,go,valid,result,sample,value,cmp);
+input clk; // clock input
+input go; // go=1 to perform conversion
+output valid; // valid=1 when conversion finished
+output [7:0] result; // 8 bit result output
+output [7:0] value; // to DAC
+output sample; // to S&H circuit
+input cmp; // from comparator
+reg [1:0] state; // current state in state machine
+reg [7:0] mask; // bit to test in binary search
+reg [7:0] result; // hold partially converted result
+// state assignment
+parameter sWait=0, sSample=1, sConv=2, sDone=3;
+// synchronous design
+always @(posedge clk)
+  if (!go)
+    state <= sWait; // stop and reset if go=0
+  else case (state) // choose next state in state machine
+    sWait: state <= sSample;
+    sSample: begin // start new conversion so
+      state <= sConv; // enter convert state next
+      mask <= 8'b10000000; // reset mask to MSB only
+      result <= 8'b0; // clear result
+    end
+    sConv: begin
+      // set bit if comparator indicates input larger than
+      // value currently under consideration, else leave bit clear
+      if (cmp) result <= result | mask;
+      // shift mask to try next bit next time
+      mask <= mask>>1;
+      // finished once LSB has been done
+      if (mask) state <= sDone;
+    end
+    sDone: ;
+    default: state <= sWait;
+  endcase
+assign sample = state==sSample; // drive sample and hold
+assign value = result | mask; // (result so far) OR (bit to try)
+assign valid = state==sDone; // indicate when finished
+endmodule
+
+
+
+
+
+The corresponding testbench code is provided as:
+module sar2_v;
+// registers to hold inputs to circuit under test, wires for outputs
+reg clk,go;
+wire valid,sample,cmp;
+wire [7:0] result;
+wire [7:0] value;
+
+// Instantiate the Unit Under Test (UUT)
+controller uut (.clk(clk), .go(go), .valid(valid), .result(result), .sample(sample), .value(value), .cmp(cmp));
+
+// generate a clock with period of 20 time units
+always #10 clk=~clk;
+
+initial clk=0;
+
+// simulate analogue circuit with a digital model
+reg [7:0] hold;
+always @(posedge sample) hold = 8'b01000110;
+assign cmp = (hold > value);
+
+// monitor some signals and provide input stimuli
+initial begin
+  #100; go=0;
+  #100; go=1;
+  #5000; go=0;
+  #5000; go=1;
+  #40; go=0;
+  #5000; $stop;
+end
+
+endmodule
