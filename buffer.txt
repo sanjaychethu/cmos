@@ -1,0 +1,20 @@
+Source Code for Buffer:
+module buff(a, y);
+input a;
+output y;
+assign y=a;
+endmodule
+Testbench Code for Buffer:
+module bu_v;
+reg a;wire y;
+buff uut (a,y);
+initial
+begin
+a = 0;
+#10 a=1;
+#10 a=0;
+#10 a=1;
+#10 a=0;
+#10 a=1;
+end
+endmodule
