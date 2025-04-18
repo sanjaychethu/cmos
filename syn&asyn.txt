@@ -1,0 +1,87 @@
+ource code for a 4-bit synchronous counter is provided as:
+module synch1(clk, rst, count);
+input clk;
+input rst;
+output reg [3:0] count;
+always @(posedge clk)
+  if(rst)
+    count <= 4'b0000;
+  else
+    count <= count + 4'b0001;
+endmodule
+The corresponding testbench code is given as:
+module synch2_v;
+reg clk;
+reg rst;
+wire [3:0] count;
+
+synch1 uut (.clk(clk), .rst(rst), .count(count));
+
+initial begin
+  clk = 0;
+  rst = 1;
+  #100;
+  rst = 0;
+  #5 rst = 1;
+  #5 rst = 0;
+  #200 $finish;
+end
+
+always #5 clk = ~clk;
+
+endmodule
+
+
+Asynchronous
+
+source code for a 4-bit asynchronous counter is provided:
+module asyn(clk, rst, count);
+input clk;
+input rst;
+output reg [3:0] count;
+always @(negedge clk)
+  if(rst)
+    count <= 4'b0000;
+  else
+    count <= ~count;
+always @(negedge count)
+  if(rst)
+    count[1] <= 1'b0;
+  else
+    count[1] <= ~count[1];
+always @(negedge count[1])
+  if(rst)
+    count[4] <= 1'b0;
+  else
+    count[4] <= ~count[4];
+always @(negedge count[4])
+  if(rst)
+    count[5] <= 1'b0;
+  else
+    count[5] <= ~count[5];
+endmodule
+
+
+
+The corresponding testbench code is also provided:
+module asyn1_v;
+reg clk;
+reg rst;
+wire [3:0] count;
+
+asyn uut (.clk(clk), .rst(rst), .count(count));
+
+initial begin
+  clk=0; rst=0;
+  forever #5 clk=~clk;
+end
+
+initial begin
+  rst=1;
+  #10 rst=0;
+  #100 rst=1;
+  #10 rst=0;
+  #200 $finish;
+end
+
+endmodule
