@@ -1,0 +1,41 @@
+module trfgate(a, b, c, d, e, f, g, h, i);
+input a;
+input b;
+output c;
+output d;
+output e;
+output f;
+output g;
+output h;
+output i;
+assign c=a&b; // AND
+assign d=a|b; // OR
+assign e=~a;   // NOT
+assign f=~(a&b); // NAND
+assign g=~(a|b); // NOR
+assign h=a^b;  // XOR
+assign i=~(a^b); // XNOR
+endmodule
+
+Testbench Code for these basic/universal gates is as follows:
+module trfgate1_v;
+reg a;
+reg b;
+wire c;
+wire d;
+wire e;
+wire f;
+wire g;
+wire h;
+wire i;
+trfgate uut (a, b, c, d, e, f, g, h, i);
+initial begin
+a = 0;
+b = 0;
+#10 a = 0; b = 1;
+#10 a = 1; b = 0;
+#10 a = 1; b = 1;
+#10 a = 0; b = 0;
+#10 a = 0; b = 1;
+end
+endmodule
