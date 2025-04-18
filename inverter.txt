@@ -1,0 +1,21 @@
+The Verilog code (Source Code) for the inverter is as follows:
+module inv1(a, y);
+input a;
+output y;
+assign y=~a;
+endmodule
+
+The Testbench code for the inverter is as follows:
+module inv3_v;
+reg a;
+wire y;
+inv1 uut (a,y);
+initial begin
+a = 0;
+#5 a=1;
+#5 a=0;
+#5 a=1;
+#5 a=0;
+#5 a=1;
+end
+endmodule
