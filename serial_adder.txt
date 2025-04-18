@@ -1,0 +1,56 @@
+module serialadd16(clk, rst, a, b, sum);
+  input clk;
+  input rst;
+  input [3:0] a, b;
+  output reg [4:0] sum;
+  reg cin;
+  reg [4:0] s0;
+
+  always @(posedge clk)
+  begin
+    if(rst)
+      begin
+        s0 <= 5'b0;
+        cin <= 1'b0;
+      end
+    else
+      begin
+        cin <= s0[3];
+        s0 <= a^b^cin;
+        ina <= {1'b0,ina[3:1]};
+        inb <= {1'b0,inb[3:1]};
+        org[3:0] <= {s0,org[3:1]};
+      end
+  end
+  assign s0_in = ina^inb^cin;
+  assign c0_in = (ina&inb)|(inb&cin)|(ina&cin);
+  assign org[3] = ina&inb&cin;
+  assign sum = org;
+endmodule
+
+Test bench
+module serial162_v;
+  reg clk;
+  reg rst;
+  reg [3:0] a;
+  reg [3:0] b;
+  wire [4:0] sum;
+
+  serialadd16 uut (.clk(clk), .rst(rst), .a(a), .b(b), .sum(sum));
+
+  initial begin
+    clk <= 1'b0;
+    forever #5 clk <= ~clk;
+  end
+
+  initial begin
+    rst <= 1'b1;
+    a <= 4'b0;
+    b <= 4'b0;
+    #10 rst <= 1'b0;
+    #100;
+    #10 rst <= 1'b1;
+    #300;
+    $finish;
+  end
+  
