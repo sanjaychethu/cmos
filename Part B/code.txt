@@ -1,12 +1,11 @@
 INV
 vdd vdd 0 DC 5
-vin in 0 DC pwl 10n 0 20n 4 50n 5 60n 0
-cload out 0 250fF
-* pulse tran tf trig v(out) val=4.5 fall=1 td=8ns targ v(out) val=0.5 fall=1
-tran tf trig v(out) val=0.5 rise=1 td=50ns targ v(out) val=4.5 rise=1
-.tran 0 100n
-.include C:\electric\180micron.txt
-
+vin in 0 DC pwl 10n 0 20n 5 50n 5 60n 0
+cload out 0 250fF 
+.measure tran tf trig v(vout) val=4.5 fall=1 td=0ns targ v(vout) val=0.5 fall=1
+.measure tran tf trig v(vout) val=4.5 rise=1 td=0ns targ v(vout) val=0.5 rise=1
+.tran 0 100ns
+.include D:\Electric\180 micro.txt
 
 NAND & NOR
 vdd vdd 0 DC 5
